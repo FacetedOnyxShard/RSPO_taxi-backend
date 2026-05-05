@@ -1,48 +1,39 @@
 package ru.taxi.user_service.controller;
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.taxi.user_service.dto.CreatePassengerRequest;
-import ru.taxi.user_service.dto.CreatePassengerResponse;
-import ru.taxi.user_service.dto.GetPassengerRequest;
-import ru.taxi.user_service.dto.GetPassengerResponse;
+import ru.taxi.user_service.dto.PassengerRegistrationRequest;
+import ru.taxi.user_service.dto.PassengerResponse;
 import ru.taxi.user_service.model.Passenger;
 import ru.taxi.user_service.service.PassengerService;
 
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 @RestController
 @RequestMapping("/api/passengers")
+@RequiredArgsConstructor
+@Validated
 public class PassengerController {
     private final PassengerService passengerService;
 
-    public PassengerController(PassengerService passengerService) {
-        this.passengerService = passengerService;
-    }
-
     @PostMapping
-    public ResponseEntity<CreatePassengerResponse> createPassenger(@RequestBody CreatePassengerRequest request) {
-        Passenger created = passengerService.createPassenger(request);
-
-        CreatePassengerResponse response = new CreatePassengerResponse(
-                created.id(),
-                created.name(),
-                created.email(),
-                created.phone(),
-                created.created_at()
-        );
-
+    public ResponseEntity<PassengerResponse> registerPassenger(
+            @Valid @RequestBody PassengerRegistrationRequest request) {
+        PassengerResponse response = passengerService.registerPassenger(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<GetPassengerResponse> getPassenger(@PathVariable String id) {
-        Passenger passenger = passengerService.getPassenger(new GetPassengerRequest(id));
-        GetPassengerResponse response = new GetPassengerResponse(
-                passenger.name(),
-                passenger.email(),
-                passenger.phone(),
-                passenger.created_at()
-        );
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+    @GetMapping("/{id}")
+    public ResponseEntity<PassengerResponse> getPassenger(
+            @PathVariable String id) {
+        PassengerResponse response = passengerService.getPassenger(id);
+        return ResponseEntity.ok(response);
     }
 }
