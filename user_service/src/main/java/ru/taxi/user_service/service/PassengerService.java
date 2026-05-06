@@ -7,6 +7,8 @@ import ru.taxi.user_service.dto.PassengerResponse;
 import ru.taxi.user_service.model.Passenger;
 import ru.taxi.user_service.repository.PassengerRepository;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PassengerService {
@@ -33,6 +35,10 @@ public class PassengerService {
         Passenger passenger = passengerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Passenger not found with id: " + id));
         return convertToResponse(passenger);
+    }
+
+    public List<Passenger> getAllPassengers() {
+        return passengerRepository.findAll();
     }
 
     private PassengerResponse convertToResponse(Passenger passenger) {

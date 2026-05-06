@@ -23,6 +23,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PassengerController {
     private final PassengerService passengerService;
 
+    @GetMapping
+    public List<Passenger> getAll() {
+        return passengerService.getAllPassengers();
+    }
+
     @PostMapping
     public ResponseEntity<PassengerResponse> registerPassenger(
             @Valid @RequestBody PassengerRegistrationRequest request) {

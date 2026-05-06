@@ -11,6 +11,8 @@ import ru.taxi.user_service.model.Passenger;
 import ru.taxi.user_service.repository.DriverRepository;
 import ru.taxi.user_service.repository.PassengerRepository;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class DriverService {
@@ -42,6 +44,10 @@ public class DriverService {
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Driver not found with id: " + id));
         return convertToResponse(driver);
+    }
+
+    public List<Driver> getAllDrivers() {
+        return driverRepository.findAll();
     }
 
     public DriverResponse updateDriverStatus(String id, String status) {

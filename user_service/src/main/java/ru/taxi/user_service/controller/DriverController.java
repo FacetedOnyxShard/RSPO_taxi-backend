@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.taxi.user_service.dto.DriverRegistrationRequest;
 import ru.taxi.user_service.dto.DriverResponse;
 import ru.taxi.user_service.dto.DriverStatusUpdateRequest;
+import ru.taxi.user_service.model.Driver;
 import ru.taxi.user_service.model.Passenger;
 import ru.taxi.user_service.service.DriverService;
 
@@ -23,6 +24,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Validated
 public class DriverController {
     private final DriverService driverService;
+
+    @GetMapping
+    public List<Driver> getAll() {
+        return driverService.getAllDrivers();
+    }
 
     @PostMapping
     public ResponseEntity<DriverResponse> registerDriver(

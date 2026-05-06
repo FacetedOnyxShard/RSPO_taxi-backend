@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: trip_service
+
+server:
+  port: 8002
+
+user-service:
+  url: http://localhost:8001
