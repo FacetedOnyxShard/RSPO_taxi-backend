@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.taxi.user_service.model.DriverStatus;
 
 @Data
 @NoArgsConstructor
@@ -25,5 +26,5 @@ public class DriverRegistrationRequest {
     @NotBlank(message = "License number is required")
     private String licenseNumber;
 
-    private String status = "available";
+    private DriverStatus status = DriverStatus.FREE;
 }

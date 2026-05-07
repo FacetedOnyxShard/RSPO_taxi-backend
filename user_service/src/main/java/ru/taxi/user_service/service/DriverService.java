@@ -7,6 +7,7 @@ import ru.taxi.user_service.dto.DriverResponse;
 import ru.taxi.user_service.dto.PassengerRegistrationRequest;
 import ru.taxi.user_service.dto.PassengerResponse;
 import ru.taxi.user_service.model.Driver;
+import ru.taxi.user_service.model.DriverStatus;
 import ru.taxi.user_service.model.Passenger;
 import ru.taxi.user_service.repository.DriverRepository;
 import ru.taxi.user_service.repository.PassengerRepository;
@@ -50,7 +51,7 @@ public class DriverService {
         return driverRepository.findAll();
     }
 
-    public DriverResponse updateDriverStatus(String id, String status) {
+    public DriverResponse updateDriverStatus(String id, DriverStatus status) {
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Driver not found with id: " + id));
 

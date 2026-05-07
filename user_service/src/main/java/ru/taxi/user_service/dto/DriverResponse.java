@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.taxi.user_service.model.DriverStatus;
 
 @Data
 @NoArgsConstructor
@@ -17,5 +18,5 @@ public class DriverResponse {
     private String phone;
     private String createdAt;
     private String licenseNumber;
-    private String status;
+    private DriverStatus status;
 }

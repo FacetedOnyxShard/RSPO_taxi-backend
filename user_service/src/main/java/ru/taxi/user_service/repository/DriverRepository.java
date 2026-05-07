@@ -2,6 +2,7 @@ package ru.taxi.user_service.repository;
 
 import org.springframework.stereotype.Repository;
 import ru.taxi.user_service.model.Driver;
+import ru.taxi.user_service.model.DriverStatus;
 import ru.taxi.user_service.model.Passenger;
 
 import java.time.LocalDateTime;
@@ -53,7 +54,7 @@ public class DriverRepository {
                 .anyMatch(d -> d.getLicenseNumber().equals(licenseNumber));
     }
 
-    public void updateStatus(String id, String status) {
+    public void updateStatus(String id, DriverStatus status) {
         findById(id).ifPresent(driver -> driver.setStatus(status));
     }
 }
