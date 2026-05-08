@@ -24,3 +24,6 @@ user-service:
 
 worker-service:
   url: http://localhost:8003
+
+jwt:
+  secret: ${JWT_SECRET}

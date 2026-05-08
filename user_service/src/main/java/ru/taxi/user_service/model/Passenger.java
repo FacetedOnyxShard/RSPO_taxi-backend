@@ -33,6 +33,9 @@ public class Passenger {
     @Column(nullable = false, unique = true)
     private String phone;
 
+    @Column(nullable = false)
+    private String password;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 

@@ -1,6 +1,7 @@
 package ru.taxi.user_service.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.taxi.user_service.dto.DriverRegistrationRequest;
@@ -16,6 +17,7 @@ import java.util.List;
 public class DriverService {
 
     private final DriverRepository driverRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public DriverResponse registerDriver(DriverRegistrationRequest request) {
@@ -35,6 +37,7 @@ public class DriverService {
         driver.setPhone(request.getPhone());
         driver.setLicenseNumber(request.getLicenseNumber());
         driver.setStatus(request.getStatus());
+        driver.setPassword(passwordEncoder.encode(request.getPassword()));
 
         Driver saved = driverRepository.save(driver);
         return convertToResponse(saved);

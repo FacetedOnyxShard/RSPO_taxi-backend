@@ -29,4 +29,7 @@ public class DriverRegistrationRequest {
 
     @NotNull(message = "Status is required")
     private DriverStatus status;
+
+    @NotBlank(message = "Password is required")
+    private String password;
 }

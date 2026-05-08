@@ -2,3 +2,5 @@ venv/
 *.txt
 *.md
 .env
+*.pdf
+.*

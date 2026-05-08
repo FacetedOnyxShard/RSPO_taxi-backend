@@ -21,4 +21,7 @@ public class PassengerRegistrationRequest {
     @NotBlank(message = "Phone is required")
     @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Invalid phone number")
     private String phone;
+
+    @NotBlank(message = "Password is required")
+    private String password;
 }

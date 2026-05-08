@@ -38,6 +38,9 @@ public class Driver {
     @Column(name = "license_number", nullable = false, unique = true)
     private String licenseNumber;
 
+    @Column(nullable = false)
+    private String password;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DriverStatus status;

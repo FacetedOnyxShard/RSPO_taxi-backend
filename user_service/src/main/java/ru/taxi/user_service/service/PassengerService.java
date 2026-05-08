@@ -1,6 +1,7 @@
 package ru.taxi.user_service.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.taxi.user_service.dto.PassengerRegistrationRequest;
@@ -15,6 +16,7 @@ import java.util.List;
 public class PassengerService {
 
     private final PassengerRepository passengerRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public PassengerResponse registerPassenger(PassengerRegistrationRequest request) {
@@ -29,6 +31,7 @@ public class PassengerService {
         passenger.setName(request.getName());
         passenger.setEmail(request.getEmail());
         passenger.setPhone(request.getPhone());
+        passenger.setPassword(passwordEncoder.encode(request.getPassword()));
 
         Passenger saved = passengerRepository.save(passenger);
         return convertToResponse(saved);
