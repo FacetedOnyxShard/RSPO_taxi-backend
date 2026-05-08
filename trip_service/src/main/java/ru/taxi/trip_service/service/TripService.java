@@ -3,6 +3,7 @@ package ru.taxi.trip_service.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.taxi.trip_service.client.UserServiceClient;
+import ru.taxi.trip_service.client.WorkerServiceClient;
 import ru.taxi.trip_service.dto.*;
 import ru.taxi.trip_service.exception.NoAvailableDriverException;
 import ru.taxi.trip_service.exception.TripNotFoundException;
@@ -23,6 +24,7 @@ public class TripService {
 
     private final TripRepository repository;
     private final UserServiceClient userServiceClient;
+    private final WorkerServiceClient workerServiceClient;
 
     private final ReentrantLock assignmentLock = new ReentrantLock();
 
@@ -57,6 +59,12 @@ public class TripService {
             assignmentLock.unlock();
         }
 
+        workerServiceClient.sendNotification(
+                trip.getId(),
+                "Поездка создана. Водитель назначен.",
+                "TRIP_CREATED"
+        );
+
         return mapToCreateResponse(trip);
     }
 
@@ -76,7 +84,9 @@ public class TripService {
         Trip trip = repository.findById(id)
                 .orElseThrow(() -> new TripNotFoundException(id));
 
+        TripStatus oldStatus = TripStatus.valueOf(trip.getStatus().toUpperCase());
         TripStatus newStatus = TripStatus.valueOf(statusRequest.getStatus().toUpperCase());
+
         trip.setStatus(newStatus.name());
         trip.setUpdated_at(Instant.now().toString());
         repository.save(trip);
@@ -84,6 +94,10 @@ public class TripService {
         if (newStatus == TripStatus.COMPLETED) {
             userServiceClient.updateDriverStatus(trip.getDriver_id(), DriverStatus.FREE);
         }
+
+        String message = String.format("Статус поездки изменён с %s на %s",
+                oldStatus.name(), newStatus.name());
+        workerServiceClient.sendNotification(trip.getId(), message, "STATUS_CHANGE");
 
         return mapToResponse(trip);
     }

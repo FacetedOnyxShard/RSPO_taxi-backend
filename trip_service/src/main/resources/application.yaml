@@ -7,3 +7,6 @@ server:
 
 user-service:
   url: http://localhost:8001
+
+worker-service:
+  url: http://localhost:8003
