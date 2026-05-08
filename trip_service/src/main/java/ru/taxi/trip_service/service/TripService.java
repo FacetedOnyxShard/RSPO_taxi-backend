@@ -40,6 +40,10 @@ public class TripService {
 
     @Transactional
     public TripCreateResponse createTrip(TripCreateRequest request) {
+        if (userServiceClient.getPassenger(request.getPassenger_id()).isEmpty()) {
+            throw new RuntimeException("Passenger not found");
+        }
+
         DriverDto driver;
         try {
             driver = userServiceClient.assignDriver();
