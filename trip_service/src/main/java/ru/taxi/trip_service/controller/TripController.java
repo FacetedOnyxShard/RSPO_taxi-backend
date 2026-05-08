@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.taxi.trip_service.dto.StatsResponse;
 import ru.taxi.trip_service.dto.TripCreateRequest;
 import ru.taxi.trip_service.dto.TripCreateResponse;
 import ru.taxi.trip_service.dto.TripResponse;
@@ -67,6 +68,12 @@ public class TripController {
             @PathVariable String id,
             @Valid @RequestBody RatingRequest ratingRequest) {
         TripResponse response = service.rateTrip(id, ratingRequest.getRating());
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/statistics")
+    public ResponseEntity<StatsResponse> getStatistics(@RequestParam(required = false) String date) {
+        StatsResponse response = service.getStatsForDate(date);
         return ResponseEntity.ok(response);
     }
 

@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.taxi.trip_service.client.UserServiceClient;
 import ru.taxi.trip_service.client.WorkerServiceClient;
 import ru.taxi.trip_service.dto.DriverDto;
+import ru.taxi.trip_service.dto.StatsResponse;
 import ru.taxi.trip_service.dto.TripCreateRequest;
 import ru.taxi.trip_service.dto.TripCreateResponse;
 import ru.taxi.trip_service.dto.TripResponse;
@@ -20,6 +21,9 @@ import ru.taxi.trip_service.model.Trip;
 import ru.taxi.trip_service.model.TripStatus;
 import ru.taxi.trip_service.repository.TripRepository;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -112,6 +116,26 @@ public class TripService {
         Trip updated = tripRepository.save(trip);
         workerServiceClient.sendNotification(updated.getId(), "Trip rated: " + rating + " stars", "TRIP_RATED");
         return mapToResponse(updated);
+    }
+
+    public StatsResponse getStatsForDate(String dateStr) {
+        LocalDate date;
+        if (dateStr == null || dateStr.isEmpty()) {
+            date = LocalDate.now(ZoneOffset.UTC);
+        } else {
+            date = LocalDate.parse(dateStr);
+        }
+        Instant start = date.atStartOfDay(ZoneOffset.UTC).toInstant();
+        Instant end = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+
+        List<Object[]> results = tripRepository.getCountAndAvgPriceBetween(start, end);
+        if (results.isEmpty()) {
+            return new StatsResponse(date.toString(), 0, 0.0);
+        }
+        Object[] row = results.getFirst();
+        long count = ((Number) row[0]).longValue();
+        double avg = row[1] != null ? ((Number) row[1]).doubleValue() : 0.0;
+        return new StatsResponse(date.toString(), count, avg);
     }
 
     private TripResponse mapToResponse(Trip trip) {

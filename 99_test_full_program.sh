@@ -121,3 +121,13 @@ curl -s -X GET http://$HOST_ADDRESS:$USER_SERVICE_PORT/api/passengers \
 echo -e "\nСписок всех водителей (требует авторизацию):"
 curl -s -X GET http://$HOST_ADDRESS:$USER_SERVICE_PORT/api/drivers \
   -H "Authorization: Bearer $PASSENGER_TOKEN" | jq
+
+
+echo "=== Statistics without date ==="
+curl -s -X GET "http://$HOST_ADDRESS:$TRIP_SERVICE_PORT/api/trips/statistics" \
+  -H "Authorization: Bearer $PASSENGER_TOKEN" | jq
+echo
+
+echo "=== Statistics with date 2026-05-08 ==="
+curl -s -X GET "http://$HOST_ADDRESS:$TRIP_SERVICE_PORT/api/trips/statistics?date=2026-05-08" \
+  -H "Authorization: Bearer $PASSENGER_TOKEN" | jq
