@@ -12,13 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.taxi.user_service.dto.DriverListResponse;
 import ru.taxi.user_service.dto.DriverRegistrationRequest;
 import ru.taxi.user_service.dto.DriverResponse;
 import ru.taxi.user_service.dto.DriverStatusUpdateRequest;
-import ru.taxi.user_service.model.Driver;
 import ru.taxi.user_service.service.DriverService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/drivers")
@@ -29,8 +30,10 @@ public class DriverController {
     private final DriverService driverService;
 
     @GetMapping
-    public List<Driver> getAll() {
-        return driverService.getAllDrivers();
+    public List<DriverListResponse> getAll() {
+        return driverService.getAllDrivers().stream()
+                .map(driverService::convertToListResponse)
+                .collect(Collectors.toList());
     }
 
     @PostMapping

@@ -31,6 +31,7 @@ auth_response=$(curl -s -X POST http://$HOST_ADDRESS:$USER_SERVICE_PORT/auth/log
     \"role\": \"passenger\"
   }")
 PASSENGER_TOKEN=$(echo "$auth_response" | jq -r '.token')
+echo "  Token = $PASSENGER_TOKEN"
 echo "  Token получен"
 
 echo "Регистрация водителя:"
@@ -66,7 +67,8 @@ response=$(curl -s -X POST http://$HOST_ADDRESS:$TRIP_SERVICE_PORT/api/trips \
   -d "{
     \"passenger_id\": \"$PASSENGER_ID\",
     \"origin\": \"ул. Ленина, 10\",
-    \"destination\": \"ул. Пушкина, 20\"
+    \"destination\": \"ул. Пушкина, 20\",
+    \"distance\": 12.5
   }")
 echo "$response" | jq
 TRIP_ID=$(echo "$response" | jq -r '.id')
@@ -97,6 +99,16 @@ curl -s -X PATCH http://$HOST_ADDRESS:$TRIP_SERVICE_PORT/api/trips/$TRIP_ID/stat
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $DRIVER_TOKEN" \
   -d '{"status": "COMPLETED"}' | jq
+
+echo "Оценить поездку (5 звёзд):"
+curl -s -X POST http://$HOST_ADDRESS:$TRIP_SERVICE_PORT/api/trips/$TRIP_ID/rate \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $PASSENGER_TOKEN" \
+  -d '{"rating": 5}' | jq
+
+echo "Повторный запрос информации о поездке (с рейтингом):"
+curl -s -X GET http://$HOST_ADDRESS:$TRIP_SERVICE_PORT/api/trips/$TRIP_ID \
+  -H "Authorization: Bearer $PASSENGER_TOKEN" | jq
 
 echo -e "\nПросмотр уведомлений:"
 curl -s -X GET "http://$HOST_ADDRESS:$WORKER_SERVICE_PORT/notifications?trip_id=$TRIP_ID" \

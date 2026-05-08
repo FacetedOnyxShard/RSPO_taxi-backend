@@ -17,4 +17,5 @@ public class TripResponse {
     private int price;
     private String created_at;
     private String updated_at;
+    private Integer rating;
 }

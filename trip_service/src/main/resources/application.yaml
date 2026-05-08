@@ -27,3 +27,6 @@ worker-service:
 
 jwt:
   secret: ${JWT_SECRET}
+
+taxi:
+  tariff: 50

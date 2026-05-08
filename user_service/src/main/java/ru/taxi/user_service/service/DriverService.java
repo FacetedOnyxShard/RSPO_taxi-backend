@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.taxi.user_service.dto.DriverListResponse;
 import ru.taxi.user_service.dto.DriverRegistrationRequest;
 import ru.taxi.user_service.dto.DriverResponse;
 import ru.taxi.user_service.model.Driver;
@@ -51,6 +52,18 @@ public class DriverService {
 
     public List<Driver> getAllDrivers() {
         return driverRepository.findAll();
+    }
+
+    public DriverListResponse convertToListResponse(Driver driver) {
+        return new DriverListResponse(
+                driver.getId(),
+                driver.getName(),
+                driver.getEmail(),
+                driver.getPhone(),
+                driver.getCreatedAt().toString(),
+                driver.getLicenseNumber(),
+                driver.getStatus()
+        );
     }
 
     @Transactional

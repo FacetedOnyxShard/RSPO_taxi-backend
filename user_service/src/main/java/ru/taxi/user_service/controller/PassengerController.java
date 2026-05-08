@@ -11,12 +11,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.taxi.user_service.dto.PassengerListResponse;
 import ru.taxi.user_service.dto.PassengerRegistrationRequest;
 import ru.taxi.user_service.dto.PassengerResponse;
-import ru.taxi.user_service.model.Passenger;
 import ru.taxi.user_service.service.PassengerService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/passengers")
@@ -27,8 +28,10 @@ public class PassengerController {
     private final PassengerService passengerService;
 
     @GetMapping
-    public List<Passenger> getAll() {
-        return passengerService.getAllPassengers();
+    public List<PassengerListResponse> getAll() {
+        return passengerService.getAllPassengers().stream()
+                .map(passengerService::convertToListResponse)
+                .collect(Collectors.toList());
     }
 
     @PostMapping

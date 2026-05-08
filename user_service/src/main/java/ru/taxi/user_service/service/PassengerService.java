@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.taxi.user_service.dto.PassengerListResponse;
 import ru.taxi.user_service.dto.PassengerRegistrationRequest;
 import ru.taxi.user_service.dto.PassengerResponse;
 import ru.taxi.user_service.model.Passenger;
@@ -45,6 +46,16 @@ public class PassengerService {
 
     public List<Passenger> getAllPassengers() {
         return passengerRepository.findAll();
+    }
+
+    public PassengerListResponse convertToListResponse(Passenger passenger) {
+        return new PassengerListResponse(
+                passenger.getId(),
+                passenger.getName(),
+                passenger.getEmail(),
+                passenger.getPhone(),
+                passenger.getCreatedAt().toString()
+        );
     }
 
     private PassengerResponse convertToResponse(Passenger passenger) {

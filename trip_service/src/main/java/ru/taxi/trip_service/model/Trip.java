@@ -50,6 +50,8 @@ public class Trip {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
+    private Integer rating;
+
     @PrePersist
     void onCreate() {
         if (createdAt == null) {

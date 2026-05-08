@@ -1,6 +1,7 @@
 package ru.taxi.trip_service.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.taxi.trip_service.client.UserServiceClient;
@@ -10,7 +11,9 @@ import ru.taxi.trip_service.dto.TripCreateRequest;
 import ru.taxi.trip_service.dto.TripCreateResponse;
 import ru.taxi.trip_service.dto.TripResponse;
 import ru.taxi.trip_service.dto.TripStatusUpdateRequest;
+import ru.taxi.trip_service.exception.IllegalTripStateException;
 import ru.taxi.trip_service.exception.NoAvailableDriverException;
+import ru.taxi.trip_service.exception.RatingOutOfRangeException;
 import ru.taxi.trip_service.exception.TripNotFoundException;
 import ru.taxi.trip_service.model.DriverStatus;
 import ru.taxi.trip_service.model.Trip;
@@ -28,6 +31,9 @@ public class TripService {
     private final UserServiceClient userServiceClient;
     private final WorkerServiceClient workerServiceClient;
 
+    @Value("${taxi.tariff:50}")
+    private int tariff;
+
     @Transactional
     public TripCreateResponse createTrip(TripCreateRequest request) {
         DriverDto driver;
@@ -43,13 +49,15 @@ public class TripService {
         trip.setOrigin(request.getOrigin());
         trip.setDestination(request.getDestination());
         trip.setStatus(TripStatus.CREATED);
-        trip.setPrice(150);
+        int price = (int) (request.getDistance() * tariff);
+        trip.setPrice(price);
+        trip.setRating(null);
 
         Trip saved = tripRepository.save(trip);
 
         workerServiceClient.sendNotification(
                 saved.getId(),
-                "Trip created. Driver assigned.",
+                "Trip created. Driver assigned. Price: " + price,
                 "TRIP_CREATED"
         );
 
@@ -90,6 +98,22 @@ public class TripService {
         return mapToResponse(updated);
     }
 
+    @Transactional
+    public TripResponse rateTrip(String id, int rating) {
+        if (rating < 1 || rating > 5) {
+            throw new RatingOutOfRangeException();
+        }
+        Trip trip = tripRepository.findById(id)
+                .orElseThrow(() -> new TripNotFoundException(id));
+        if (trip.getStatus() != TripStatus.COMPLETED) {
+            throw new IllegalTripStateException("Cannot rate trip that is not completed");
+        }
+        trip.setRating(rating);
+        Trip updated = tripRepository.save(trip);
+        workerServiceClient.sendNotification(updated.getId(), "Trip rated: " + rating + " stars", "TRIP_RATED");
+        return mapToResponse(updated);
+    }
+
     private TripResponse mapToResponse(Trip trip) {
         return new TripResponse(
                 trip.getId(),
@@ -100,7 +124,8 @@ public class TripService {
                 trip.getDestination(),
                 trip.getPrice(),
                 trip.getCreatedAt().toString(),
-                trip.getUpdatedAt().toString()
+                trip.getUpdatedAt().toString(),
+                trip.getRating()
         );
     }
 
@@ -114,7 +139,8 @@ public class TripService {
                 trip.getDestination(),
                 trip.getPrice(),
                 trip.getCreatedAt().toString(),
-                trip.getUpdatedAt().toString()
+                trip.getUpdatedAt().toString(),
+                trip.getRating()
         );
     }
 }
