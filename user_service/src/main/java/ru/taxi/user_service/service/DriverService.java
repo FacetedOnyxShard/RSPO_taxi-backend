@@ -2,23 +2,22 @@ package ru.taxi.user_service.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.taxi.user_service.dto.DriverRegistrationRequest;
 import ru.taxi.user_service.dto.DriverResponse;
-import ru.taxi.user_service.dto.PassengerRegistrationRequest;
-import ru.taxi.user_service.dto.PassengerResponse;
 import ru.taxi.user_service.model.Driver;
 import ru.taxi.user_service.model.DriverStatus;
-import ru.taxi.user_service.model.Passenger;
 import ru.taxi.user_service.repository.DriverRepository;
-import ru.taxi.user_service.repository.PassengerRepository;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class DriverService {
+
     private final DriverRepository driverRepository;
 
+    @Transactional
     public DriverResponse registerDriver(DriverRegistrationRequest request) {
         if (driverRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already registered");
@@ -51,11 +50,20 @@ public class DriverService {
         return driverRepository.findAll();
     }
 
+    @Transactional
     public DriverResponse updateDriverStatus(String id, DriverStatus status) {
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Driver not found with id: " + id));
-
         driver.setStatus(status);
+        Driver updated = driverRepository.save(driver);
+        return convertToResponse(updated);
+    }
+
+    @Transactional
+    public DriverResponse assignFreeDriver() {
+        Driver driver = driverRepository.findFirstFreeDriverForUpdate(DriverStatus.FREE)
+                .orElseThrow(() -> new RuntimeException("No free drivers available"));
+        driver.setStatus(DriverStatus.BUSY);
         Driver updated = driverRepository.save(driver);
         return convertToResponse(updated);
     }
@@ -66,7 +74,7 @@ public class DriverService {
                 driver.getName(),
                 driver.getEmail(),
                 driver.getPhone(),
-                driver.getCreatedAt(),
+                driver.getCreatedAt().toString(),
                 driver.getLicenseNumber(),
                 driver.getStatus()
         );

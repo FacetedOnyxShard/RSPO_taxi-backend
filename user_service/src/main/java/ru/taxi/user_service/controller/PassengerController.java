@@ -4,23 +4,26 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.taxi.user_service.dto.PassengerRegistrationRequest;
 import ru.taxi.user_service.dto.PassengerResponse;
 import ru.taxi.user_service.model.Passenger;
 import ru.taxi.user_service.service.PassengerService;
 
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/passengers")
 @RequiredArgsConstructor
 @Validated
 public class PassengerController {
+
     private final PassengerService passengerService;
 
     @GetMapping
@@ -36,8 +39,7 @@ public class PassengerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PassengerResponse> getPassenger(
-            @PathVariable String id) {
+    public ResponseEntity<PassengerResponse> getPassenger(@PathVariable String id) {
         PassengerResponse response = passengerService.getPassenger(id);
         return ResponseEntity.ok(response);
     }

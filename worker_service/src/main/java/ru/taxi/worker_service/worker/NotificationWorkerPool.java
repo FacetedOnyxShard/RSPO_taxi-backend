@@ -5,7 +5,7 @@ import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.taxi.worker_service.repository.NotificationRepository;
+import ru.taxi.worker_service.service.NotificationService;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,13 +14,14 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Slf4j
 public class NotificationWorkerPool {
-    private final NotificationRepository repository;
+
+    private final NotificationService notificationService;
     private final ExecutorService executor;
     private final int poolSize;
 
-    public NotificationWorkerPool(NotificationRepository repository,
+    public NotificationWorkerPool(NotificationService notificationService,
                                   @Value("${worker.pool.size:4}") int poolSize) {
-        this.repository = repository;
+        this.notificationService = notificationService;
         this.poolSize = poolSize;
         this.executor = Executors.newFixedThreadPool(poolSize);
     }
@@ -28,7 +29,7 @@ public class NotificationWorkerPool {
     @PostConstruct
     public void startWorkers() {
         for (int i = 0; i < poolSize; i++) {
-            executor.submit(new NotificationWorker(repository));
+            executor.submit(new NotificationWorker(notificationService));
         }
         log.info("Started {} notification workers", poolSize);
     }

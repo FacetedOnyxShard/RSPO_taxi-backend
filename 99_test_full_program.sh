@@ -1,8 +1,8 @@
 #!/bin/bash
 
-HOST_ADDRESS=$(ip route show default | awk '{print $3}') && \
-USER_SERVICE_PORT=8001 && \
-TRIP_SERVICE_PORT=8002 && \
+HOST_ADDRESS=$(ip route show default | awk '{print $3}')
+USER_SERVICE_PORT=8001
+TRIP_SERVICE_PORT=8002
 WORKER_SERVICE_PORT=8003
 
 echo "Регистрация пассажира:"

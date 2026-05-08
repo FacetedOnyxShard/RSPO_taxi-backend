@@ -4,17 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import ru.taxi.trip_service.model.DriverStatus;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class DriverDto extends AbstractUsersDto{
+public class DriverDto extends AbstractUsersDto {
     private String licenseNumber;
-    private DriverStatus status;
+    private String status;
 
     public DriverDto(String id, String name, String email, String phone,
-                  String createdAt, String licenseNumber, DriverStatus status) {
+                     String createdAt, String licenseNumber, String status) {
         super(id, name, email, phone, createdAt);
         this.licenseNumber = licenseNumber;
         this.status = status;

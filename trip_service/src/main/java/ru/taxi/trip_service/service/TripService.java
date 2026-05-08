@@ -2,9 +2,14 @@ package ru.taxi.trip_service.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.taxi.trip_service.client.UserServiceClient;
 import ru.taxi.trip_service.client.WorkerServiceClient;
-import ru.taxi.trip_service.dto.*;
+import ru.taxi.trip_service.dto.DriverDto;
+import ru.taxi.trip_service.dto.TripCreateRequest;
+import ru.taxi.trip_service.dto.TripCreateResponse;
+import ru.taxi.trip_service.dto.TripResponse;
+import ru.taxi.trip_service.dto.TripStatusUpdateRequest;
 import ru.taxi.trip_service.exception.NoAvailableDriverException;
 import ru.taxi.trip_service.exception.TripNotFoundException;
 import ru.taxi.trip_service.model.DriverStatus;
@@ -12,125 +17,104 @@ import ru.taxi.trip_service.model.Trip;
 import ru.taxi.trip_service.model.TripStatus;
 import ru.taxi.trip_service.repository.TripRepository;
 
-import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TripService {
 
-    private final TripRepository repository;
+    private final TripRepository tripRepository;
     private final UserServiceClient userServiceClient;
     private final WorkerServiceClient workerServiceClient;
 
-    private final ReentrantLock assignmentLock = new ReentrantLock();
-
+    @Transactional
     public TripCreateResponse createTrip(TripCreateRequest request) {
-        Trip trip;
-        assignmentLock.lock();
+        DriverDto driver;
         try {
-            List<DriverDto> freeDrivers = userServiceClient.getAllDrivers().stream()
-                    .filter(d -> d.getStatus().isAvailable())
-                    .toList();
-
-            if (freeDrivers.isEmpty()) {
-                throw new NoAvailableDriverException();
-            }
-
-            DriverDto driver = freeDrivers.getFirst();
-            userServiceClient.updateDriverStatus(driver.getId(), DriverStatus.BUSY);
-
-            trip = new Trip();
-            trip.setId(UUID.randomUUID().toString());
-            trip.setPassenger_id(request.getPassenger_id());
-            trip.setDriver_id(driver.getId());
-            trip.setOrigin(request.getOrigin());
-            trip.setDestination(request.getDestination());
-            trip.setStatus(TripStatus.CREATED.name());
-            trip.setPrice(calculatePrice());
-            trip.setCreated_at(Instant.now().toString());
-            trip.setUpdated_at(trip.getCreated_at());
-
-            repository.save(trip);
-        } finally {
-            assignmentLock.unlock();
+            driver = userServiceClient.assignDriver();
+        } catch (Exception e) {
+            throw new NoAvailableDriverException();
         }
 
+        Trip trip = new Trip();
+        trip.setPassengerId(request.getPassenger_id());
+        trip.setDriverId(driver.getId());
+        trip.setOrigin(request.getOrigin());
+        trip.setDestination(request.getDestination());
+        trip.setStatus(TripStatus.CREATED);
+        trip.setPrice(150);
+
+        Trip saved = tripRepository.save(trip);
+
         workerServiceClient.sendNotification(
-                trip.getId(),
-                "Поездка создана. Водитель назначен.",
+                saved.getId(),
+                "Trip created. Driver assigned.",
                 "TRIP_CREATED"
         );
 
-        return mapToCreateResponse(trip);
+        return mapToCreateResponse(saved);
     }
 
     public TripResponse getTrip(String id) {
-        Trip trip = repository.findById(id)
+        Trip trip = tripRepository.findById(id)
                 .orElseThrow(() -> new TripNotFoundException(id));
         return mapToResponse(trip);
     }
 
     public List<TripResponse> getTripsByPassenger(String passengerId) {
-        return repository.findByPassengerId(passengerId).stream()
+        return tripRepository.findByPassengerId(passengerId).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public TripResponse updateTripStatus(String id, TripStatusUpdateRequest statusRequest) {
-        Trip trip = repository.findById(id)
+        Trip trip = tripRepository.findById(id)
                 .orElseThrow(() -> new TripNotFoundException(id));
 
-        TripStatus oldStatus = TripStatus.valueOf(trip.getStatus().toUpperCase());
+        TripStatus oldStatus = trip.getStatus();
         TripStatus newStatus = TripStatus.valueOf(statusRequest.getStatus().toUpperCase());
 
-        trip.setStatus(newStatus.name());
-        trip.setUpdated_at(Instant.now().toString());
-        repository.save(trip);
+        trip.setStatus(newStatus);
+        Trip updated = tripRepository.save(trip);
 
         if (newStatus == TripStatus.COMPLETED) {
-            userServiceClient.updateDriverStatus(trip.getDriver_id(), DriverStatus.FREE);
+            userServiceClient.updateDriverStatus(trip.getDriverId(), DriverStatus.FREE);
         }
 
-        String message = String.format("Статус поездки изменён с %s на %s",
+        String message = String.format("Trip status changed from %s to %s",
                 oldStatus.name(), newStatus.name());
-        workerServiceClient.sendNotification(trip.getId(), message, "STATUS_CHANGE");
+        workerServiceClient.sendNotification(updated.getId(), message, "STATUS_CHANGE");
 
-        return mapToResponse(trip);
+        return mapToResponse(updated);
     }
 
     private TripResponse mapToResponse(Trip trip) {
         return new TripResponse(
                 trip.getId(),
-                trip.getPassenger_id(),
-                trip.getDriver_id(),
-                trip.getStatus(),
+                trip.getPassengerId(),
+                trip.getDriverId(),
+                trip.getStatus().name(),
                 trip.getOrigin(),
                 trip.getDestination(),
                 trip.getPrice(),
-                trip.getCreated_at(),
-                trip.getUpdated_at()
+                trip.getCreatedAt().toString(),
+                trip.getUpdatedAt().toString()
         );
     }
 
     private TripCreateResponse mapToCreateResponse(Trip trip) {
         return new TripCreateResponse(
                 trip.getId(),
-                trip.getPassenger_id(),
-                trip.getDriver_id(),
-                trip.getStatus(),
+                trip.getPassengerId(),
+                trip.getDriverId(),
+                trip.getStatus().name(),
                 trip.getOrigin(),
                 trip.getDestination(),
                 trip.getPrice(),
-                trip.getCreated_at(),
-                trip.getUpdated_at()
+                trip.getCreatedAt().toString(),
+                trip.getUpdatedAt().toString()
         );
-    }
-
-    private int calculatePrice() {
-        return 150;
     }
 }

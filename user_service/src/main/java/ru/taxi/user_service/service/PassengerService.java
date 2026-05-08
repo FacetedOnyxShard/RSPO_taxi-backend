@@ -2,6 +2,7 @@ package ru.taxi.user_service.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.taxi.user_service.dto.PassengerRegistrationRequest;
 import ru.taxi.user_service.dto.PassengerResponse;
 import ru.taxi.user_service.model.Passenger;
@@ -12,8 +13,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PassengerService {
+
     private final PassengerRepository passengerRepository;
 
+    @Transactional
     public PassengerResponse registerPassenger(PassengerRegistrationRequest request) {
         if (passengerRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already registered");
@@ -47,7 +50,7 @@ public class PassengerService {
                 passenger.getName(),
                 passenger.getEmail(),
                 passenger.getPhone(),
-                passenger.getCreatedAt()
+                passenger.getCreatedAt().toString()
         );
     }
 }
