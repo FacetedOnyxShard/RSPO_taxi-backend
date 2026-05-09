@@ -54,9 +54,9 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
-      USER_SERVICE_URL: http://user_service:8001
-      WORKER_SERVICE_URL: http://worker_service:8003
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      # USER_SERVICE_URL: http://user_service:8001
+      # WORKER_SERVICE_URL: http://worker_service:8003
     ports:
       - "8002:8002"
     depends_on:
