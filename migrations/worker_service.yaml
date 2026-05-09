@@ -1,0 +1,69 @@
+databaseChangeLog:
+- changeSet:
+    id: 1778320235499-1
+    author: User (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: notification_tasks_pkey
+            name: id
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: created_at
+            type: TIMESTAMP WITH TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: message
+            type: VARCHAR(255)
+        - column:
+            name: retry_count
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: status
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: trip_id
+            type: VARCHAR(255)
+        - column:
+            name: type
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: updated_at
+            type: TIMESTAMP WITH TIME ZONE
+        tableName: notification_tasks
+- changeSet:
+    id: 1778320235499-2
+    author: User (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: status
+        indexName: idx_notification_tasks_status
+        tableName: notification_tasks
+        using: btree
+- changeSet:
+    id: 1778320235499-3
+    author: User (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: trip_id
+        indexName: idx_notification_tasks_trip_id
+        tableName: notification_tasks
+        using: btree
+

@@ -4,3 +4,4 @@ venv/
 .env
 *.pdf
 .*
+liquibase_libs/

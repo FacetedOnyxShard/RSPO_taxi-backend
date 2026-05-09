@@ -1,0 +1,130 @@
+databaseChangeLog:
+- changeSet:
+    id: 1778319861874-1
+    author: User (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: drivers_pkey
+            name: id
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: created_at
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: email
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: license_number
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: phone
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: status
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: password
+            type: VARCHAR(255)
+        tableName: drivers
+- changeSet:
+    id: 1778319861874-2
+    author: User (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: passengers_pkey
+            name: id
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: created_at
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: email
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: phone
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: password
+            type: VARCHAR(255)
+        tableName: passengers
+- changeSet:
+    id: 1778319861874-3
+    author: User (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: license_number
+        constraintName: ukcr60ij36fuvtcb87298g6rct6
+        tableName: drivers
+- changeSet:
+    id: 1778319861874-4
+    author: User (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: phone
+        constraintName: ukk8g8tftyclmpgp3a5l0ni1nhk
+        tableName: drivers
+- changeSet:
+    id: 1778319861874-5
+    author: User (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: email
+        constraintName: ukre66mdta4hy6pxm2w1rqu08jv
+        tableName: drivers
+- changeSet:
+    id: 1778319861874-6
+    author: User (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: email
+        constraintName: ukhe2lxmd479lr1c8ox64s625gu
+        tableName: passengers
+- changeSet:
+    id: 1778319861874-7
+    author: User (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: phone
+        constraintName: ukjhj7j3xgl5c9v2iukspu6p31y
+        tableName: passengers
+
