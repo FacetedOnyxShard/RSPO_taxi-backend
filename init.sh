@@ -1,8 +1,0 @@
-#!/bin/bash
-set -e
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-    CREATE USER $TAXI_DB_USER WITH PASSWORD '$TAXI_DB_PASSWORD';
-    CREATE DATABASE user_service OWNER $TAXI_DB_USER;
-    CREATE DATABASE trip_service OWNER $TAXI_DB_USER;
-    CREATE DATABASE worker_service OWNER $TAXI_DB_USER;
-EOSQL
