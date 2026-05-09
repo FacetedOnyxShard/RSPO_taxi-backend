@@ -1,6 +1,7 @@
 package ru.taxi.user_service.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import ru.taxi.user_service.repository.DriverRepository;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DriverService {
@@ -77,7 +79,8 @@ public class DriverService {
 
     @Transactional
     public DriverResponse assignFreeDriver() {
-        Driver driver = driverRepository.findFirstFreeDriverForUpdate(DriverStatus.FREE)
+        log.info("All drivers: {}", driverRepository.findAll());
+        Driver driver = driverRepository.findFirstByStatusOrderByIdAsc(DriverStatus.FREE)
                 .orElseThrow(() -> new RuntimeException("No free drivers available"));
         driver.setStatus(DriverStatus.BUSY);
         Driver updated = driverRepository.save(driver);
