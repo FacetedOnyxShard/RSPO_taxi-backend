@@ -18,6 +18,7 @@ public interface DriverRepository extends JpaRepository<Driver, String> {
     boolean existsByLicenseNumber(String licenseNumber);
     Optional<Driver> findByEmail(String email);
 
-    @Query(value = "SELECT * FROM drivers WHERE status = :status ORDER BY id ASC LIMIT 1 FOR UPDATE SKIP LOCKED", nativeQuery = true)
-    Optional<Driver> findFirstFreeDriverForUpdate(@Param("status") String status);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT d FROM Driver d WHERE d.status = :status ORDER BY d.id ASC LIMIT 1")
+    Optional<Driver> findFirstFreeDriverForUpdate(DriverStatus status);
 }

@@ -80,7 +80,7 @@ public class DriverService {
     @Transactional
     public DriverResponse assignFreeDriver() {
         log.info("All drivers: {}", driverRepository.findAll());
-        Driver driver = driverRepository.findFirstFreeDriverForUpdate(DriverStatus.FREE.getDescription())
+        Driver driver = driverRepository.findFirstFreeDriverForUpdate(DriverStatus.FREE)
                 .orElseThrow(() -> new RuntimeException("No free drivers available"));
         driver.setStatus(DriverStatus.BUSY);
         Driver updated = driverRepository.save(driver);
