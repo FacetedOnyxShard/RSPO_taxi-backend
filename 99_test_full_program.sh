@@ -70,6 +70,7 @@ response=$(curl -s -X POST http://$HOST_ADDRESS:$TRIP_SERVICE_PORT/api/trips \
     \"destination\": \"ул. Пушкина, 20\",
     \"distance\": 12.5
   }")
+echo "$response"
 echo "$response" | jq
 TRIP_ID=$(echo "$response" | jq -r '.id')
 echo "  Trip ID: $TRIP_ID"
