@@ -19,6 +19,6 @@ public interface DriverRepository extends JpaRepository<Driver, String> {
     Optional<Driver> findByEmail(String email);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT d FROM Driver d WHERE d.status = :status ORDER BY d.id ASC LIMIT 1")
-    Optional<Driver> findFirstFreeDriverForUpdate(DriverStatus status);
+    @Query("SELECT d FROM Driver d WHERE d.status = :status ORDER BY d.id ASC FETCH FIRST 1 ROWS ONLY")
+    Optional<Driver> findFirstFreeDriverForUpdate(@Param("status") DriverStatus status);
 }
