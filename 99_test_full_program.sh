@@ -129,6 +129,6 @@ curl -s -X GET "http://$HOST_ADDRESS:$TRIP_SERVICE_PORT/api/trips/statistics" \
   -H "Authorization: Bearer $PASSENGER_TOKEN" | jq
 echo
 
-echo "=== Statistics with date 2026-05-08 ==="
-curl -s -X GET "http://$HOST_ADDRESS:$TRIP_SERVICE_PORT/api/trips/statistics?date=2026-05-08" \
+echo "=== Statistics with date 2026-05-11 ==="
+curl -s -X GET "http://$HOST_ADDRESS:$TRIP_SERVICE_PORT/api/trips/statistics?date=2026-05-11" \
   -H "Authorization: Bearer $PASSENGER_TOKEN" | jq
