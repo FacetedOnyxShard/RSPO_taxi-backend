@@ -1,0 +1,68 @@
+databaseChangeLog:
+- changeSet:
+    id: 1778319915534-1
+    author: User (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: trips_pkey
+            name: id
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: created_at
+            type: TIMESTAMP WITH TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: destination
+            type: VARCHAR(255)
+        - column:
+            name: driver_id
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: origin
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: passenger_id
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: price
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: status
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: updated_at
+            type: TIMESTAMP WITH TIME ZONE
+        - column:
+            name: rating
+            type: INTEGER
+        tableName: trips
+- changeSet:
+    id: 1778319915534-2
+    author: User (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: status
+        indexName: idx_trips_status
+        tableName: trips
+        using: btree
+

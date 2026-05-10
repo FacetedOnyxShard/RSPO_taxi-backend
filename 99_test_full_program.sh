@@ -5,7 +5,7 @@ USER_SERVICE_PORT=8001
 TRIP_SERVICE_PORT=8002
 WORKER_SERVICE_PORT=8003
 
-source .env_for_bash
+source .env
 PASSENGER_PASSWORD=$(echo -n "$PASSENGER_PASSWORD" | tr -d '\r\n"' | sed 's/\\//g')
 DRIVER_PASSWORD=$(echo -n "$DRIVER_PASSWORD" | tr -d '\r\n"' | sed 's/\\//g')
 
