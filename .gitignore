@@ -1,6 +1,6 @@
 venv/
 *.txt
-*.md
+*.md !README.md
 .env
 *.pdf
 .*
